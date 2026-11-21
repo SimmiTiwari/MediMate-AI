@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Wellness Summary - MediMate AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Firebase v10 Compat SDK (Zero-cost Spark plan client) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+          MediMate AI
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="chatbot.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          AI Health Chatbot
+        </a>
+        <a href="tracker.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+          Daily Health Tracker
+        </a>
+        <a href="journal.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          Health Journal
+        </a>
+        <a href="summary.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          AI Wellness Summary
+        </a>
+        <a href="reminders.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Wellness Reminders
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="open-cloud-config-btn" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 8px;">
+          ☁️ Cloud Settings
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-logout" style="width: 100%; color: var(--status-error);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button type="button" class="mobile-menu-btn btn-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h2>AI Wellness Summary</h2>
+            <p>Synthesizes your recorded cloud health data into structured wellness reports</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="user-profile-badge">
+            <div class="avatar current-user-avatar">U</div>
+            <span style="font-size: 0.875rem; font-weight: 600;" class="current-user-name">User</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Medical Disclaimer Banner -->
+      <div class="medical-disclaimer-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>
+          <strong>Disclaimer:</strong> AI summaries provide educational lifestyle observations based solely on self-reported logs. They do not constitute clinical diagnostic reports or medical treatments.
+        </span>
+      </div>
+
+      <!-- Generator Configuration Card -->
+      <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-header">
+          <div>
+            <h3>Generate New Summary</h3>
+            <p>Select timeframe and parameters for Google Gemini to analyze</p>
+          </div>
+          <span class="badge badge-teal">Cloud Analysis</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: center;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="summary-period-select">Analysis Timeframe</label>
+            <select id="summary-period-select" class="form-select">
+              <option value="daily">Today's Daily Summary</option>
+              <option value="weekly" selected>Past 7 Days (Weekly Trend Report)</option>
+            </select>
+          </div>
+
+          <div style="padding-top: 20px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="include-journal-checkbox" style="width: 18px; height: 18px; accent-color: var(--primary-teal);">
+              <span>Include my personal health journal notes (explicit consent)</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button type="button" class="btn btn-primary btn-lg" id="generate-summary-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            Generate Wellness Summary
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Report Container -->
+      <div id="summary-report-container" style="margin-bottom: var(--space-xl);">
+        <div class="empty-state card">
+          <div class="empty-state-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <h3>No Summary Generated Yet</h3>
+          <p>Choose your timeframe above and click "Generate Wellness Summary" to initiate Gemini cloud analysis.</p>
+        </div>
+      </div>
+
+      <!-- Past Summaries History -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h3>Summary History</h3>
+            <p>Previously compiled wellness reports stored in Cloud Firestore</p>
+          </div>
+          <span class="badge badge-info">Stored Reports</span>
+        </div>
+        <div id="summary-history-list">
+          <!-- Rendered via summary.js -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/summary.js"></script>
+</body>
+</html>

@@ -28,7 +28,9 @@ if (fs.existsSync(envPath)) {
 const { generateChatResponse, generateWellnessSummary, MEDICAL_DISCLAIMER } = require('./gemini');
 
 const PORT = parseInt(process.env.PORT || '5001', 10);
-const frontendPath = path.join(__dirname, '..', 'frontend');
+const frontendPath = fs.existsSync(path.join(__dirname, 'public'))
+  ? path.join(__dirname, 'public')
+  : path.join(__dirname, '..', 'frontend');
 
 // MIME types dictionary for static file serving
 const MIME_TYPES = {

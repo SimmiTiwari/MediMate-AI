@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register - MediMate AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      background: linear-gradient(135deg, #F7FAFA 0%, #E6F4F2 100%);
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+    }
+    .auth-card {
+      background: var(--surface-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--surface-subtle);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      background: transparent;
+    }
+    .auth-tab.active {
+      background: var(--surface-white);
+      color: var(--primary-teal);
+      box-shadow: var(--shadow-sm);
+    }
+    .auth-form {
+      display: none;
+    }
+    .auth-form.active {
+      display: block;
+    }
+  </style>
+
+  <!-- Firebase v10 Compat SDK (Zero-cost Spark plan client) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <!-- Brand Header -->
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="index.html" class="brand-logo" style="justify-content: center; font-size: 1.5rem;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+        </svg>
+        MediMate AI
+      </a>
+      <p style="margin-top: 6px; font-size: 0.875rem;">Cloud-Connected Health & Wellness Assistant</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-login">Sign In</button>
+        <button type="button" class="auth-tab" id="tab-register">Create Account</button>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="auth-error-alert" style="display: none; background: #FEE2E2; border: 1px solid #FCA5A5; color: #B91C1C; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+
+      <!-- 1. Sign In Form -->
+      <form id="login-form" class="auth-form active">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="you@university.edu" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="login-submit-btn">
+          Sign In to Dashboard
+        </button>
+      </form>
+
+      <!-- 2. Register Form -->
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Alex Morgan" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="you@university.edu" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm-password">Confirm Password</label>
+          <input type="password" id="reg-confirm-password" class="form-input" placeholder="Repeat password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="register-submit-btn">
+          Create Free Account
+        </button>
+      </form>
+
+      <!-- Medical Disclaimer -->
+      <div style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px; font-size: 0.775rem; color: var(--text-muted); text-align: center;">
+        <em>MediMate AI provides general health tracking and educational wellness suggestions. Not intended for medical diagnoses.</em>
+      </div>
+    </div>
+
+    <!-- Back to landing -->
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="index.html" style="font-size: 0.875rem; color: var(--text-secondary);">&larr; Back to Home</a>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-db.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    // Tab switching and Form Handling
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const loginForm = document.getElementById('login-form');
+    const regForm = document.getElementById('register-form');
+    const errorAlert = document.getElementById('auth-error-alert');
+
+    function showError(msg) {
+      errorAlert.textContent = msg;
+      errorAlert.style.display = 'block';
+    }
+
+    function clearError() {
+      errorAlert.style.display = 'none';
+      errorAlert.textContent = '';
+    }
+
+    function switchTab(mode) {
+      clearError();
+      if (mode === 'register') {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        regForm.classList.add('active');
+        loginForm.classList.remove('active');
+      } else {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        loginForm.classList.add('active');
+        regForm.classList.remove('active');
+      }
+    }
+
+    tabLogin.addEventListener('click', () => switchTab('login'));
+    tabRegister.addEventListener('click', () => switchTab('register'));
+
+    // Check query params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'register') {
+      switchTab('register');
+    }
+
+    // Login Form Submit
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value;
+      const btn = document.getElementById('login-submit-btn');
+
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        await window.mediMateDB.login(email, pass);
+        window.MediMateConfig.showToast('Welcome back! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
+      } catch (err) {
+        showError(err.message || 'Login failed. Please check your credentials.');
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Dashboard';
+      }
+    });
+
+    // Register Form Submit
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass = document.getElementById('reg-password').value;
+      const confirmPass = document.getElementById('reg-confirm-password').value;
+      const btn = document.getElementById('register-submit-btn');
+
+      if (pass.length < 6) {
+        showError('Password must be at least 6 characters.');
+        return;
+      }
+
+      if (pass !== confirmPass) {
+        showError('Passwords do not match. Please re-enter.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+
+      try {
+        await window.mediMateDB.register(name, email, pass);
+        window.MediMateConfig.showToast('Account registered successfully! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
+      } catch (err) {
+        showError(err.message || 'Registration failed. Please try a different email.');
+        btn.disabled = false;
+        btn.textContent = 'Create Free Account';
+      }
+    });
+  </script>
+</body>
+</html>

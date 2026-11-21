@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Journal - MediMate AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Firebase v10 Compat SDK (Zero-cost Spark plan client) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+          MediMate AI
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="chatbot.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          AI Health Chatbot
+        </a>
+        <a href="tracker.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+          Daily Health Tracker
+        </a>
+        <a href="journal.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          Health Journal
+        </a>
+        <a href="summary.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          AI Wellness Summary
+        </a>
+        <a href="reminders.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Wellness Reminders
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="open-cloud-config-btn" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 8px;">
+          ☁️ Cloud Settings
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-logout" style="width: 100%; color: var(--status-error);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button type="button" class="mobile-menu-btn btn-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h2>Personal Health Journal</h2>
+            <p>Private wellness reflections, symptoms observation, and mood diary</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="user-profile-badge">
+            <div class="avatar current-user-avatar">U</div>
+            <span style="font-size: 0.875rem; font-weight: 600;" class="current-user-name">User</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Privacy & Medical Disclaimer -->
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: var(--space-lg);">
+        <div class="medical-disclaimer-banner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>
+            <strong>Disclaimer:</strong> Self-reported symptoms logged here are for personal awareness only and do not constitute a clinical diagnosis. Seek emergency care for severe symptoms.
+          </span>
+        </div>
+        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; padding: 10px 14px; border-radius: var(--radius-md); font-size: 0.825rem; display: flex; align-items: center; gap: 8px;">
+          <span>🔒 <strong>Privacy Assurance:</strong> Journal entries are stored under strict Firestore owner-only security rules. Your notes are never shared with AI unless explicitly confirmed in the Summary module.</span>
+        </div>
+      </div>
+
+      <!-- Journal Two-Column Layout -->
+      <div class="dashboard-grid">
+        <!-- Left: Write / Edit Reflection -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3 id="form-heading">New Reflection</h3>
+              <span class="badge badge-teal">Private Entry</span>
+            </div>
+
+            <form id="journal-form">
+              <input type="hidden" id="journal-entry-id" value="">
+
+              <div class="form-group">
+                <label class="form-label" for="journal-date">Date</label>
+                <input type="date" id="journal-date" class="form-input" required>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label class="form-label" for="journal-mood">Mood</label>
+                  <select id="journal-mood" class="form-select">
+                    <option value="Calm">😌 Calm</option>
+                    <option value="Happy">😊 Happy & Motivated</option>
+                    <option value="Energetic">⚡ Energetic</option>
+                    <option value="Neutral">😐 Neutral</option>
+                    <option value="Tired">🥱 Fatigued / Tired</option>
+                    <option value="Stressed">😰 Stressed</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="journal-energy">Energy Level</label>
+                  <select id="journal-energy" class="form-select">
+                    <option value="5">5 - Excellent Peak</option>
+                    <option value="4">4 - High Energy</option>
+                    <option value="3" selected>3 - Moderate Normal</option>
+                    <option value="2">2 - Low Energy</option>
+                    <option value="1">1 - Depleted</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="journal-notes">Reflection Notes</label>
+                <textarea
+                  id="journal-notes"
+                  class="form-textarea"
+                  rows="5"
+                  placeholder="How did you feel today? Any notable dietary habits, stress factors, or wellness achievements?"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="journal-symptoms">Optional Observations / Mild Symptoms</label>
+                <input
+                  type="text"
+                  id="journal-symptoms"
+                  class="form-input"
+                  placeholder="e.g. Mild headache after work, slight muscle soreness"
+                >
+                <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block;">
+                  For severe symptoms (chest discomfort, shortness of breath), consult urgent medical care immediately.
+                </span>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button type="submit" class="btn btn-primary" id="journal-submit-btn">
+                  Save Reflection
+                </button>
+                <button type="button" class="btn btn-secondary" id="journal-cancel-edit-btn" style="display: none;">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Entries History & Search -->
+        <div>
+          <div class="card" style="margin-bottom: var(--space-md);">
+            <div class="card-header" style="margin-bottom: 12px;">
+              <h3>Journal Entries</h3>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <input
+                type="text"
+                id="journal-search"
+                class="form-input"
+                placeholder="🔍 Search notes or symptoms..."
+              >
+            </div>
+          </div>
+
+          <div id="journal-entries-list">
+            <!-- Rendered via journal.js -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/journal.js"></script>
+</body>
+</html>
