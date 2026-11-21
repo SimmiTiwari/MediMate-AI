@@ -54,11 +54,14 @@ try {
   useExpress = false;
 }
 
+let appExport = null;
 if (useExpress) {
-  startExpressServer();
+  appExport = startExpressServer();
 } else {
-  startNativeServer();
+  appExport = startNativeServer();
 }
+
+module.exports = appExport;
 
 /**
  * Mode A: Express Server Implementation
@@ -137,9 +140,12 @@ function startExpressServer() {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 
-  app.listen(PORT, () => {
-    printBanner('Express');
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+      printBanner('Express');
+    });
+  }
+  return app;
 }
 
 /**
@@ -234,9 +240,12 @@ function startNativeServer() {
     res.end('404 Not Found');
   });
 
-  server.listen(PORT, () => {
-    printBanner('Native Node.js (Zero-Dependency Engine)');
-  });
+  if (!process.env.VERCEL) {
+    server.listen(PORT, () => {
+      printBanner('Native Node.js (Zero-Dependency Engine)');
+    });
+  }
+  return server;
 }
 
 function parseJsonBody(req) {
