@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MediMate AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Chart.js CDN (Zero-cost open source visualization library) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Firebase v10 Compat SDK (Zero-cost Spark plan client) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+          MediMate AI
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="chatbot.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          AI Health Chatbot
+        </a>
+        <a href="tracker.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+          Daily Health Tracker
+        </a>
+        <a href="journal.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          Health Journal
+        </a>
+        <a href="summary.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          AI Wellness Summary
+        </a>
+        <a href="reminders.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Wellness Reminders
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="open-cloud-config-btn" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 8px;">
+          ☁️ Cloud Settings
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-logout" style="width: 100%; color: var(--status-error);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button type="button" class="mobile-menu-btn btn-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="user-greeting">
+            <h2><span id="dashboard-greeting">Welcome</span>, <span class="current-user-name">User</span> 👋</h2>
+            <p id="dashboard-date">Loading date...</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="user-profile-badge">
+            <div class="avatar current-user-avatar">U</div>
+            <span style="font-size: 0.875rem; font-weight: 600;" class="current-user-name">User</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Medical Disclaimer Banner -->
+      <div class="medical-disclaimer-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>
+          <strong>Notice:</strong> MediMate AI provides general health and wellness information only. It is not a medical professional and cannot diagnose, treat, or prevent diseases. Consult a qualified doctor for medical concerns.
+        </span>
+      </div>
+
+      <!-- 4 Primary Metric Cards -->
+      <section class="metrics-grid">
+        <!-- 1. Water Intake -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <div class="metric-icon-box water">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+              </svg>
+            </div>
+            <a href="tracker.html" class="btn-icon" title="Log Water Intake">+</a>
+          </div>
+          <div class="metric-value" id="metric-water-val">0 mL</div>
+          <div class="metric-label">Today's Water Intake</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill water" id="metric-water-bar" style="width: 0%;"></div>
+          </div>
+          <div class="metric-sub">Target ~2,500 mL baseline</div>
+        </div>
+
+        <!-- 2. Sleep -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <div class="metric-icon-box sleep">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </div>
+            <a href="tracker.html" class="btn-icon" title="Log Sleep">+</a>
+          </div>
+          <div class="metric-value" id="metric-sleep-val">0 hrs</div>
+          <div class="metric-label">Last Night's Sleep</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill sleep" id="metric-sleep-bar" style="width: 0%;"></div>
+          </div>
+          <div class="metric-sub">Target 7-9 hours restful sleep</div>
+        </div>
+
+        <!-- 3. Steps -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <div class="metric-icon-box steps">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 4v16M17 8v12M9 10v10M5 14v6"></path>
+              </svg>
+            </div>
+            <a href="tracker.html" class="btn-icon" title="Log Steps">+</a>
+          </div>
+          <div class="metric-value" id="metric-steps-val">0</div>
+          <div class="metric-label">Daily Steps</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill steps" id="metric-steps-bar" style="width: 0%;"></div>
+          </div>
+          <div class="metric-sub">Active movement goal ~10,000</div>
+        </div>
+
+        <!-- 4. Exercise -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <div class="metric-icon-box exercise">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <a href="tracker.html" class="btn-icon" title="Log Workout">+</a>
+          </div>
+          <div class="metric-value" id="metric-exercise-val">0 mins</div>
+          <div class="metric-label">Exercise Duration</div>
+          <div class="metric-sub" style="margin-top: 14px;">WHO target ~150 mins/week</div>
+        </div>
+      </section>
+
+      <!-- Charts & Widgets Grid -->
+      <section class="dashboard-grid">
+        <!-- Left: Charts -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
+          <!-- Chart 1: Activity -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Weekly Activity Trends</h3>
+                <p>Steps and physical exercise minutes over the past 7 recorded days</p>
+              </div>
+              <span class="badge badge-teal">Analytics</span>
+            </div>
+            <div style="position: relative; height: 260px;">
+              <canvas id="activityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Sleep & Hydration -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Sleep & Hydration Correlation</h3>
+                <p>Rest hours alongside fluid intake volume</p>
+              </div>
+              <span class="badge badge-info">Wellness Trends</span>
+            </div>
+            <div style="position: relative; height: 260px;">
+              <canvas id="sleepChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Side Widgets -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
+          <!-- AI Insight Card -->
+          <div class="card" style="background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); border-color: #99F6E4;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span class="badge badge-teal">AI Insight</span>
+            </div>
+            <h4 style="color: var(--dark-teal); margin-bottom: 8px;">Automated Wellness Summaries</h4>
+            <p style="font-size: 0.875rem; color: #134E4A; margin-bottom: 16px;">
+              Ready to analyze your daily habits? Let Google Gemini review your hydration and sleep data to discover personalized patterns.
+            </p>
+            <a href="summary.html" class="btn btn-primary btn-sm" style="width: 100%;">Generate AI Summary &rarr;</a>
+          </div>
+
+          <!-- Upcoming Reminders Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Reminders</h3>
+              <a href="reminders.html" style="font-size: 0.85rem; font-weight: 600;">Manage</a>
+            </div>
+            <div id="upcoming-reminders-list">
+              <!-- Rendered via dashboard.js -->
+            </div>
+          </div>
+
+          <!-- Recent Journal Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Recent Journal Notes</h3>
+              <a href="journal.html" style="font-size: 0.85rem; font-weight: 600;">View All</a>
+            </div>
+            <div id="recent-journals-list">
+              <!-- Rendered via dashboard.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

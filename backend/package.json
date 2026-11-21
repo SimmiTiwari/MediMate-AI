@@ -1,0 +1,27 @@
+{
+  "name": "medimate-ai-backend",
+  "version": "1.0.0",
+  "description": "MediMate AI Cloud-Based Health Assistant Backend Service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "cloud-computing",
+    "healthcare",
+    "ai",
+    "gemini",
+    "express"
+  ],
+  "author": "MediMate AI Team",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^0.1.2",
+    "@google/generative-ai": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  }
+}

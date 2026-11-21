@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Health Tracker - MediMate AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Firebase v10 Compat SDK (Zero-cost Spark plan client) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+          MediMate AI
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="chatbot.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          AI Health Chatbot
+        </a>
+        <a href="tracker.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+          Daily Health Tracker
+        </a>
+        <a href="journal.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          Health Journal
+        </a>
+        <a href="summary.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          AI Wellness Summary
+        </a>
+        <a href="reminders.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Wellness Reminders
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="open-cloud-config-btn" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 8px;">
+          ☁️ Cloud Settings
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-logout" style="width: 100%; color: var(--status-error);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button type="button" class="mobile-menu-btn btn-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h2>Daily Health Tracker</h2>
+            <p>Log hydration, sleep quality, and active exercise in Cloud Firestore</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="user-profile-badge">
+            <div class="avatar current-user-avatar">U</div>
+            <span style="font-size: 0.875rem; font-weight: 600;" class="current-user-name">User</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Medical Disclaimer Banner -->
+      <div class="medical-disclaimer-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>
+          <strong>Tracking Notice:</strong> Health guidelines displayed are general wellness reference ranges, not personalized medical prescriptions. Individual fluid and sleep requirements vary.
+        </span>
+      </div>
+
+      <!-- Health Log Form -->
+      <form id="health-log-form" style="margin-bottom: var(--space-xl);">
+        <input type="hidden" id="edit-log-id" value="">
+
+        <!-- Date Row -->
+        <div class="card" style="margin-bottom: var(--space-md); padding: 18px 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.1rem;">Select Record Date</h3>
+              <p style="margin: 0; font-size: 0.85rem;">Choose a date to add or edit wellness data</p>
+            </div>
+            <div style="width: 220px;">
+              <input type="date" id="log-date" class="form-input" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Tracking Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg);">
+          
+          <!-- Card 1: Water Intake -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="metric-icon-box water" style="width:36px; height:36px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                  </svg>
+                </div>
+                <h3>Water Intake</h3>
+              </div>
+              <span class="badge badge-info">Hydration</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="water-intake">Total Intake (mL)</label>
+              <input type="number" id="water-intake" class="form-input" min="0" max="10000" step="50" value="0">
+            </div>
+
+            <div class="progress-bar-container" style="height: 10px;">
+              <div class="progress-bar-fill water" id="tracker-water-progress" style="width: 0%;"></div>
+            </div>
+            <div id="tracker-water-text" style="font-size: 0.775rem; color: var(--text-muted); margin-top: 6px;">
+              0 / 2,500 mL (approx. baseline)
+            </div>
+
+            <div class="quick-add-group">
+              <button type="button" class="quick-add-btn quick-add-water" data-amount="250">+250 mL</button>
+              <button type="button" class="quick-add-btn quick-add-water" data-amount="500">+500 mL</button>
+              <button type="button" class="quick-add-btn quick-add-water" data-amount="750">+750 mL</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="reset-water-btn" style="margin-left: auto;">Reset</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Sleep Tracker -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="metric-icon-box sleep" style="width:36px; height:36px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                </div>
+                <h3>Sleep Duration</h3>
+              </div>
+              <span class="badge" style="background:#EDE9FE; color:#7C3AED;">Rest</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sleep-hours">Sleep Duration (Hours)</label>
+              <input type="number" id="sleep-hours" class="form-input" min="0" max="24" step="0.5" value="0">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label" for="bedtime">Bedtime</label>
+                <input type="time" id="bedtime" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="wakeup-time">Wake-up Time</label>
+                <input type="time" id="wakeup-time" class="form-input">
+              </div>
+            </div>
+            <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 4px;">
+              Aim for 7 to 9 hours of restorative sleep.
+            </div>
+          </div>
+
+          <!-- Card 3: Activity & Exercise -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="metric-icon-box steps" style="width:36px; height:36px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 4v16M17 8v12M9 10v10M5 14v6"></path>
+                  </svg>
+                </div>
+                <h3>Physical Activity</h3>
+              </div>
+              <span class="badge badge-success">Fitness</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="steps-count">Daily Steps</label>
+              <input type="number" id="steps-count" class="form-input" min="0" max="100000" step="100" value="0">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label" for="exercise-minutes">Exercise (Mins)</label>
+                <input type="number" id="exercise-minutes" class="form-input" min="0" max="1440" step="5" value="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="exercise-type">Workout Type</label>
+                <select id="exercise-type" class="form-select">
+                  <option value="Walking">Walking</option>
+                  <option value="Running">Running / Jogging</option>
+                  <option value="Gym & Strength">Gym & Strength</option>
+                  <option value="Yoga & Mobility">Yoga & Mobility</option>
+                  <option value="Cycling">Cycling</option>
+                  <option value="Swimming">Swimming</option>
+                  <option value="General Activity">General Activity</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="log-submit-btn" style="min-width: 220px;">
+          Save Daily Record
+        </button>
+      </form>
+
+      <!-- History Table Section -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h3>Wellness History Log</h3>
+            <p>Chronological records saved in Cloud Firestore</p>
+          </div>
+          <span class="badge badge-teal">Cloud Synced</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-secondary);">
+                <th style="padding: 12px 14px;">Date</th>
+                <th style="padding: 12px 14px;">Water Intake</th>
+                <th style="padding: 12px 14px;">Sleep</th>
+                <th style="padding: 12px 14px;">Steps</th>
+                <th style="padding: 12px 14px;">Exercise</th>
+                <th style="padding: 12px 14px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tracker-history-table-body">
+              <!-- Rendered via tracker.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/tracker.js"></script>
+</body>
+</html>
